@@ -15,3 +15,7 @@ body{
 .scoreboard{
   background-color: blue;
 }
+
+.enemy{
+  color: green;
+}

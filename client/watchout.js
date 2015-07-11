@@ -33,41 +33,11 @@ updateBestScore = function() {
 
 
 // Player class
-  // triangle shaped 
-  // x,y position on gameBoard
-  // need follow mouse around the gameBoard
-// var drag = d3.behavior.drag()
-//   .origin(function(d){return d;})
-//   .on("drag", function(d, i) {
-//     d.x += d3.event.dx;
-//     d.y += d3.event.dy;
-//     d3.select(this).attr("transform", function(d,i){
-//       return "translate(" + [d.x, d.y] + ")"
-//     });
-//   });
 
-
-// var Player = function(){
-//   this.x = gameOptions.width * .5;
-//   this.y = gameOptions.height * .5;
-// };
-
-// Player.prototype.render = function(){
-//   gameBoard
-//     .append('circle')
-//     .data({x:this.x, y:this.y})
-//     .attr('cx', function(data){return this.x;})
-//     .attr('cy', function(data){return this.y;})
-//     .attr('r', 25)
-//     .style('fill', 'orange')
-//     .call(drag);
-// };
-
-
-// var player1 = new Player();
-// player1.render();
-// // debugger;
-
+var Player = function(){
+  this.x = gameOptions.width * .5;
+  this.y = gameOptions.height * .5;
+};
 var dragmove = function(d){
   d3.select(this)
     .attr('cx', d.x = d3.event.x)
@@ -78,42 +48,45 @@ var drag = d3.behavior.drag()
   .origin(function(d){return d;})
   .on('drag', dragmove);
 
-var gameBoard = gameBoard
+Player.prototype.render = function(){
+  gameBoard
+    .data([{x: this.x, y: this.y}])
+    .append('circle')
+    .attr('cx', this.x)
+    .attr('cy', this.y)
+    .attr('r', 25)
+    .style('fill', 'orange')
+    .call(drag);
+};
+
+
+var player1 = new Player();
+player1.render();
+
+//enemies
+
+var Enemy = function(id){
+  this.x = Math.random()*100;
+  this.y = Math.random()*100;
+  this.id = id;
+}
+
+
+var enemies = [];
+for(var i=0;i<gameOptions.nEnemies;i++){
+  enemies.push(new Enemy(i))
+}
+
+gameBoard
+  .data(enemies)
+  .enter()
   .append('circle')
-  .attr('cx', 500)
-  .attr('cy', 500)
-  .attr('r', 25)
-  .style('fill', 'orange')
-  .call(drag);
-
-var data = [{
-  x : 50,
-  y : 2,
-  r : 5,
-  c : 'orange'
-}];
-
-// var circle = gameBoard
-//   .selectAll('circle')
-//   .data(data);
-
-d3.select('circle')
-  .data(data)
-  .transition()
   .attr('cx', function(d){return d.x})
-  .attr('cy', function(d){return d.y});
-
-
-
-
-// debugger;
+  .attr('cy', function(d){return d.y})
+  .attr('r', 15)
+  .style('fill', 'green')
 // d3.select('circle')
-//   .data(data)
-//   .append()
-//   .attr('cx', function(d){return d.x})
-//   .attr('cy', function(d){return d.y})
-//   .attr('fill', function(d){return d.c})
-//   .attr('r', 0)
 //   .transition()
-//   .attr('r', function(d){return d.r})
+//   .attr('cx', function(d){return d.x})
+//   .attr('cy', function(d){return d.y});
 
