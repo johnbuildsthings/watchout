@@ -8,6 +8,7 @@ var gameOptions = {
   padding: 20
 };
 
+
 var gameStats = {
   score: 0,
   bestScore: 0
@@ -17,10 +18,12 @@ var axes = {};
 axes.x = d3.scale.linear().domain([0, 100]).range([0, gameOptions.width]);
 axes.y = d3.scale.linear().domain([0, 100]).range([0, gameOptions.height]);
 
-var gameBoard = d3.select('.container').append('svg:svg')
-  .attr('width', gameOptions.width)
-  .attr('height', gameOptions.height);
+var player = {x: axes.x(50), y: axes.y(50)}
 
+var gameBoard = d3.select('.container').style({
+  width: gameOptions.width+'px',
+  height: gameOptions.height+'px',
+})
 
 var updateScore = function() {
   d3.select('.current').text(gameStats.score.toString());
@@ -34,60 +37,49 @@ updateBestScore = function() {
 
 
 // Player class
-
-var Player = function(){
-  this.x = gameOptions.width * .5;
-  this.y = gameOptions.height * .5;
-};
-var dragmove = function(d){
-  d3.select(this)
-    .attr('cx', d.x = d3.event.x)
-    .attr('cy', d.y = d3.event.y);
-};
-
-var drag = d3.behavior.drag()
-  .origin(function(d){return d;})
-  .on('drag', dragmove);
-
-Player.prototype.render = function(){
-  gameBoard
-    .data([{x: this.x, y: this.y}])
-    .append('circle')
-    .attr('cx', this.x)
-    .attr('cy', this.y)
-    .attr('r', 25)
-    .style('fill', 'orange')
-    .call(drag);
-};
+d3.select('.player').style({
+  top: function(){return axes.y(50)+'px'},
+  left: function(){return axes.x(50)+'px'},
+  width: 25+'px',
+  height: 25+'px',
+  'border-radius': 25+'px',
+  'background-color': 'blue'
+});
 
 
-var player1 = new Player();
-player1.render();
 
 //enemies
 
-var Enemy = function(id){
-  this.x = Math.random()*100;
-  this.y = Math.random()*100;
-  this.id = id;
-}
 
 
-var enemies = [];
-for(var i=0;i<gameOptions.nEnemies;i++){
-  enemies.push(new Enemy(i))
-}
-
-gameBoard
-  .data(enemies)
+var enemy = gameBoard.selectAll('.enemies')
+  .data(d3.range(gameOptions.nEnemies))
   .enter()
-  .append('circle')
-  .attr('cx', function(d){return d.x})
-  .attr('cy', function(d){return d.y})
-  .attr('r', 15)
-  .style('fill', 'green')
-// d3.select('circle')
-//   .transition()
-//   .attr('cx', function(d){return d.x})
-//   .attr('cy', function(d){return d.y});
+  .append('div')
+  .attr('class', 'enemies')
+  .style({
+    top: function(){return axes.y(Math.random()*100)+'px'},
+    left: function(){return axes.x(Math.random()*100)+'px'},
+    height: 15+'px',
+    width: 15+'px'
+  });
 
+gameBoard.on('mousemove', function(){
+  var loc = d3.mouse(this);
+  player = {x: loc[0], y:loc[1]}
+  d3.select('.player').style({
+    top: function(){return player.y-12+'px'},
+    left: function(){return player.x-12+'px'},
+  })
+});
+
+var move = function(element){
+  element.transition().duration(1500).style({
+    top: function(){return axes.y(Math.random()*100)+'px'},
+    left: function(){return axes.x(Math.random()*100)+'px'},
+  }).each('end', function(){
+    move(d3.select(this));
+  });
+}
+
+move(enemy);

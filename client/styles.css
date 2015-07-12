@@ -6,18 +6,28 @@ Feel free to use it if you like. */
 
 body{
   background-color: white;
+  position: relative;
 }
 
-.container > svg{
-  background-color: black;
+
+.container {
+  background-color: white;
   position: absolute;
 }
 
+.player{
+  height: 20px;
+  width: 20px;
+  border-radius:20px;
+  position: absolute;
+}
 .scoreboard{
   background-color: blue;
 }
 
-.enemy{
-  color: green;
->>>>>>> origin/master
+.enemies{
+  background-image: url('asteroid.png');
+  background-size: 100% 100%;
+  position:absolute;
+  z-index:500;
 }
