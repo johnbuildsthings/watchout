@@ -11,7 +11,8 @@ body{
 
 
 .container {
-  background-color: white;
+  margin: auto auto;
+  background-color: black;
   position: absolute;
 }
 

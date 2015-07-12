@@ -5,13 +5,15 @@ var gameOptions = {
   height: 450,
   width: 700,
   nEnemies: 30,
-  padding: 20
+  padding: 20,
+  r: 15,
 };
 
 
 var gameStats = {
   score: 0,
-  bestScore: 0
+  bestScore: 0,
+  collisionCount: 0
 };
 
 var axes = {};
@@ -26,13 +28,12 @@ var gameBoard = d3.select('.container').style({
 })
 
 var updateScore = function() {
-  d3.select('.current').text(gameStats.score.toString());
-};
-
-updateBestScore = function() {
-  gameStats.bestScore = Math.max(gameStats.bestScore, gameStats.score);
-
-  d3.select('.high').text(gameStats.bestScore.toString());
+  var score = d3.select('.current').select('span');
+  var highscore = d3.select('.high').select('span');
+  var collision = d3.select('.collisions').select('span');
+  score.text(gameStats.score.toString());
+  highscore.text(gameStats.bestScore.toString());
+  collision.text(gameStats.collisionCount);
 };
 
 
@@ -83,3 +84,40 @@ var move = function(element){
 }
 
 move(enemy);
+
+var scoreCount = function(){
+  gameStats.score++;
+  gameStats.bestScore = (gameStats.bestScore > gameStats.score) ? gameStats.bestScore : gameStats.score;
+  updateScore();
+}
+
+setInterval(scoreCount, 100);
+
+var previousCollision = false;
+
+var detectCollision = function(){
+  var collision = false;
+
+  enemy.each(function(){
+    var cx = this.offsetLeft + gameOptions.r;
+    var cy = this.offsetTop + gameOptions.r;
+
+    var x = cx - player.x;
+    var y = cy - player.y;
+
+    if(Math.sqrt(x*x + y*y) < gameOptions.r*2){
+      collision = true;
+    }
+
+  });
+
+  if(collision){
+    gameStats.score = 0;
+    if( previousCollision !== collision){
+      gameStats.collisionCount = gameStats.collisionCount+1;
+    }
+  }
+  previousCollision = collision;
+}
+
+d3.timer(detectCollision);
